@@ -380,7 +380,7 @@ class Report:
             if "average_error" not in self.stats[error_type + "_errors"]:
                 continue
             for comp in ["x", "y", "z"]:
-                row = ["Erros de" + comp.upper() + "(metros)"]
+                row = ["Erros de " + comp.upper() + " (metros)"]
                 row.append(f"{self.stats[error_type + '_errors']['mean'][comp]:.3f}")
                 row.append(f"{self.stats[error_type + '_errors']['std'][comp]:.3f}")
                 row.append(f"{self.stats[error_type + '_errors']['error'][comp]:.3f}")
