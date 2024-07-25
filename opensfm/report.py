@@ -494,7 +494,7 @@ class Report:
                     f"{self.stats['features_statistics'][comp][t.replace('.', '').lower()]:.0f}"
                 )
             rows.append(row)
-        print(f'rows: {rows}\ncolumns_names: {columns_names}')
+        print(f'rows{type(rows)}: {rows}\ncolumns_names{type(columns_names)}: {columns_names}')
         print('\n\n\n\n\n\n\n\n\n\n\n')
         self._make_table(columns_names, rows)
 
