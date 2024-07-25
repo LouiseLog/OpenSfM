@@ -468,7 +468,7 @@ class Report:
             self._make_centered_image(dsm_feature_matches, 80)
 
     def make_features_details(self) -> None:
-        self._make_section("Features Details")
+        self._make_section("Detalhes dos Recursos")
 
         heatmap_height = 60
         heatmaps = [
@@ -480,7 +480,7 @@ class Report:
         if len(heatmaps) > 1:
             logger.warning("Please implement multi-model display")
 
-        columns_names = ["", "Min.", "Max.", "Mean", "Median"]
+        columns_names = ["", "Mín.", "Máx..", "Média", "Mediana"]
         rows = []
         for comp in ["detected_features", "reconstructed_features"]:
             row = [comp.replace("_", " ").replace("features", "").capitalize()]
