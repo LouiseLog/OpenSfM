@@ -511,12 +511,12 @@ class Report:
                 ),
             ],
             [
-                "Average Track Length",
-                f"{self.stats['reconstruction_statistics']['average_track_length']:.2f} images",
+                "Comprimento Médio da Trajetória",
+                f"{self.stats['reconstruction_statistics']['average_track_length']:.2f} imagens",
             ],
             [
-                "Average Track Length (> 2)",
-                f"{self.stats['reconstruction_statistics']['average_track_length_over_two']:.2f} images",
+                "Comprimento Médio da Trajetória (> 2)",
+                f"{self.stats['reconstruction_statistics']['average_track_length_over_two']:.2f} imagens",
             ],
         ]
         self._make_table(None, rows, True)
