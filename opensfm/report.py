@@ -480,20 +480,22 @@ class Report:
         if len(heatmaps) > 1:
             logger.warning("Please implement multi-model display")
 
-        columns_names = ["", "Mín.", "Máx..", "Média", "Mediana"]
+        columns_names = ["", "Min.", "Max.", "Mean", "Median"]
         row, rows = [], []
         for comp in ["detected_features", "reconstructed_features"]:
-            #row = [comp.replace("_", " ").replace("features", "").capitalize()]
+            row = [comp.replace("_", " ").replace("features", "").capitalize()]
             # substitue o nome do componente por Detectados e Reconstruídos
-            if comp.replace("_", " ").replace("features", "").capitalize() == "Detected":
-                row.append("Detectados")
-            elif comp.replace("_", " ").replace("features", "").capitalize() == "Reconstructed":
-                row.append("Reconstruídos")
+            #if comp.replace("_", " ").replace("features", "").capitalize() == "Detected":
+            #    row.append("Detectados")
+            #elif comp.replace("_", " ").replace("features", "").capitalize() == "Reconstructed":
+            #    row.append("Reconstruídos")
             for t in columns_names[1:]:
                 row.append(
                     f"{self.stats['features_statistics'][comp][t.replace('.', '').lower()]:.0f}"
                 )
             rows.append(row)
+        print(f'rows: {rows}\ncolumns_names: {columns_names}')
+        print('\n\n\n\n\n\n\n\n\n\n\n')
         self._make_table(columns_names, rows)
 
         self.pdf.set_xy(self.margin, self.pdf.get_y() + self.margin)
