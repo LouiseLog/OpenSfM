@@ -337,18 +337,6 @@ class Report:
         self._make_table(None, rows, True)
         self.pdf.set_xy(self.margin, self.pdf.get_y() + self.margin / 2)
 
-        topview_height = 110
-        topview_grids = [
-            f for f in self.io_handler.ls(self.output_path) if f.startswith("topview")
-        ]
-        self.add_page_break()
-
-        self._make_section("Gráfico de sobreposição")
-        self._make_centered_image(
-            os.path.join(self.output_path, topview_grids[0]), topview_height
-        )
-
-        self.pdf.set_xy(self.margin, self.pdf.get_y() + self.margin)
 
     def make_processing_time_details(self) -> None:
         self._make_section("Processing Time Details")
@@ -720,11 +708,26 @@ class Report:
 
             return True
 
+    def make_overlap_position(self):
+        topview_height = 110
+        topview_grids = [
+            f for f in self.io_handler.ls(self.output_path) if f.startswith("topview")
+        ]
+        self.add_page_break()
+
+        self._make_section("Gráfico de sobreposição")
+        self._make_centered_image(
+            os.path.join(self.output_path, topview_grids[0]), topview_height
+        )
+
+        self.pdf.set_xy(self.margin, self.pdf.get_y() + self.margin)
+
     def generate_report(self) -> None:
 
         self.make_title()
         self.make_dataset_summary()
         self.make_processing_summary()
+        self.make_overlap_position()
 
         if self.make_preview():
             self.add_page_break()
