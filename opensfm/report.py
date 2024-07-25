@@ -481,7 +481,7 @@ class Report:
             logger.warning("Please implement multi-model display")
 
         columns_names = ["", "Min.", "Max.", "Mean", "Median"]
-        row, rows = [], []
+        rows = []
         for comp in ["detected_features", "reconstructed_features"]:
             row = [comp.replace("_", " ").replace("features", "").capitalize()]
             # substitue o nome do componente por Detectados e Reconstruídos
@@ -494,10 +494,11 @@ class Report:
                     f"{self.stats['features_statistics'][comp][t.replace('.', '').lower()]:.0f}"
                 )
             rows.append(row)
-        print(f'rows{type(rows)}: {rows}\ncolumns_names{type(columns_names)}: {columns_names}')
-        print('\n\n\n\n\n\n\n\n\n\n\n')
-        self._make_table(columns_names, rows)
-
+            # rows <class 'list'>: [['Detected ', '10000', '10000', '10000', '10000'], ['Reconstructed ', '3324', '5547', '4665', '4976']]
+            # columns_names <class 'list'>: ['', 'Min.', 'Max.', 'Mean', 'Median']
+            rows[0][0]='Detectados'
+            rows[1][0]='Reconstruídos'
+            columns_names = ["", "Mínimo", "Máximo", "Média", "Mediana"]
         self.pdf.set_xy(self.margin, self.pdf.get_y() + self.margin)
 
     def make_reconstruction_details(self) -> None:
