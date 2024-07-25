@@ -535,7 +535,7 @@ class Report:
         self.pdf.set_xy(self.margin, self.pdf.get_y() + self.margin)
 
     def make_camera_models_details(self) -> None:
-        self._make_section("Camera Models Details")
+        self._make_section("Detalhes dos Modelos de Câmera")
 
         for camera, params in self.stats["camera_errors"].items():
             residual_grids = [
@@ -551,8 +551,8 @@ class Report:
             names = [""] + list(initial.keys())
 
             rows = []
-            rows.append(["Initial"] + [f"{x:.4f}" for x in initial.values()])
-            rows.append(["Optimized"] + [f"{x:.4f}" for x in optimized.values()])
+            rows.append(["Inicial"] + [f"{x:.4f}" for x in initial.values()])
+            rows.append(["Otimizado"] + [f"{x:.4f}" for x in optimized.values()])
 
             self._make_subsection(camera)
             self._make_table(names, rows)
