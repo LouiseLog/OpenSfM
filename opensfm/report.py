@@ -224,6 +224,7 @@ class Report:
         self.pdf.cell(0, self.margin, " ", align="C", ln=True)
         self.pdf.cell(0, self.margin, " ", align="C", ln=True)
         self.pdf.cell(0, self.margin, " ", align="C", ln=True)
+        self.pdf.cell(0, self.margin, " ", align="C", ln=True)
 
         self._make_section("Resumo do Conjunto de Dados")
 
@@ -252,6 +253,7 @@ class Report:
         )
 
     def make_processing_summary(self) -> None:
+        self.pdf.cell(0, self.margin, " ", align="C", ln=True)
         self.pdf.cell(0, self.margin, " ", align="C", ln=True)
         self._make_section("Resumo do Processamento")
 
@@ -337,7 +339,6 @@ class Report:
 
         self._make_table(None, rows, True)
         self.pdf.set_xy(self.margin, self.pdf.get_y() + self.margin / 2)
-
 
     def make_processing_time_details(self) -> None:
         self._make_section("Processing Time Details")
