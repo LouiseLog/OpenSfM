@@ -610,7 +610,7 @@ class Report:
             self.pdf.set_xy(self.margin, self.pdf.get_y() + self.margin / 2)
 
     def make_tracks_details(self) -> None:
-        self._make_section("Tracks Details")
+        self._make_section("Detalhes das Trajetórias")
         matchgraph_height = 80
         matchgraph = [
             f
@@ -623,12 +623,12 @@ class Report:
 
         histogram = self.stats["reconstruction_statistics"]["histogram_track_length"]
         start_length, end_length = 2, 10
-        row_length = ["Length"]
+        row_length = ["Comprimento"]
         for length, _ in sorted(histogram.items(), key=lambda x: int(x[0])):
             if int(length) < start_length or int(length) > end_length:
                 continue
             row_length.append(length)
-        row_count = ["Count"]
+        row_count = ["Contagem"]
         for length, count in sorted(histogram.items(), key=lambda x: int(x[0])):
             if int(length) < start_length or int(length) > end_length:
                 continue
