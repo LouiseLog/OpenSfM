@@ -342,6 +342,8 @@ class Report:
             f for f in self.io_handler.ls(self.output_path) if f.startswith("topview")
         ]
         self.add_page_break()
+
+        self._make_section("Gráfico de sobreposição")
         self._make_centered_image(
             os.path.join(self.output_path, topview_grids[0]), topview_height
         )
