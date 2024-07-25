@@ -332,7 +332,7 @@ class Report:
                 f"{(self.stats['align']['coarse']['rmse_3d'] + self.stats['align']['fine']['rmse_3d']):.2f}")
 
         if len(geo_errors) > 0:
-            row_gps_gcp.append(" / ".join(geo_errors) + " Metros")
+            row_gps_gcp.append(" / ".join(geo_errors) + " metros")
             rows.append(row_gps_gcp)
 
         self._make_table(None, rows, True)
@@ -370,17 +370,17 @@ class Report:
         self.pdf.set_xy(self.margin, self.pdf.get_y() + self.margin / 2)
 
     def make_gps_details(self) -> None:
-        self._make_section("GPS/GCP/3D Errors Details")
+        self._make_section("Detalhes dos Erros GPS/GCP/3D")
 
         # GPS
         table_count = 0
         for error_type in ["gps", "gcp", "3d"]:
             rows = []
-            columns_names = [error_type.upper(), "Mean", "Standard Deviation", "RMS Error"]
+            columns_names = [error_type.upper(), "Média", "Desvio Padrão", "Erro RMS"]
             if "average_error" not in self.stats[error_type + "_errors"]:
                 continue
             for comp in ["x", "y", "z"]:
-                row = [comp.upper() + " Error (meters)"]
+                row = ["Erros de" + comp.upper() + "(metros)"]
                 row.append(f"{self.stats[error_type + '_errors']['mean'][comp]:.3f}")
                 row.append(f"{self.stats[error_type + '_errors']['std'][comp]:.3f}")
                 row.append(f"{self.stats[error_type + '_errors']['error'][comp]:.3f}")
@@ -409,11 +409,11 @@ class Report:
             rows = []
             if a_ce90 > 0 and a_le90 > 0:
                 rows += [[
-                    "Horizontal Accuracy CE90 (meters)",
+                    "Precisão Horizontal CE90 (metros)",
                     f"{a_ce90:.3f}",
                     f"{r_ce90:.3f}" if r_ce90 > 0 else "-",
                 ], [
-                    "Vertical Accuracy LE90 (meters)",
+                    "Precisão Vertical LE90 (metros)",
                     f"{a_le90:.3f}",
                     f"{r_le90:.3f}" if r_le90 > 0 else "-",
                 ]]
@@ -421,7 +421,7 @@ class Report:
             if rows:
                 if table_count > 2:
                     self.add_page_break()
-                self._make_table(["", "Absolute", "Relative"], rows, True)
+                self._make_table(["", "Absoluto", "Relativo"], rows, True)
                 self.pdf.set_xy(self.margin, self.pdf.get_y() + self.margin / 2)
 
         # rows = []
@@ -730,7 +730,7 @@ class Report:
         self.add_page_break()
         self.make_overlap_position()
         self.make_preview()
-        
+
         if os.path.isfile(os.path.join(self.output_path, "overlap.png")):
             self.make_survey_data()
 
