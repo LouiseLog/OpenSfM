@@ -223,6 +223,7 @@ class Report:
         self.pdf.cell(0, self.margin, " ", align="C", ln=True)
         self.pdf.cell(0, self.margin, " ", align="C", ln=True)
         self.pdf.cell(0, self.margin, " ", align="C", ln=True)
+
         self._make_section("Resumo do Conjunto de Dados")
 
         rows = [
@@ -250,7 +251,6 @@ class Report:
         )
 
     def make_processing_summary(self) -> None:
-        self.pdf.cell(0, self.margin, " ", align="C", ln=True)
         self.pdf.cell(0, self.margin, " ", align="C", ln=True)
         self._make_section("Resumo do Processamento")
 
@@ -669,7 +669,7 @@ class Report:
         count = 0
 
         if os.path.isfile(ortho) or os.path.isfile(dsm):
-            self._make_section("Pré-visualizações")
+            self._make_section("Pré-visualização")
 
             if os.path.isfile(ortho):
                 self._make_centered_image(
@@ -738,7 +738,7 @@ class Report:
         else:
             self.make_align_details()
 
-        self.add_page_break()
+        #self.add_page_break()
 
         self.make_features_details()
         self.make_reconstruction_details()
