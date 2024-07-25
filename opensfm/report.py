@@ -11,9 +11,22 @@ from typing import Any, Dict
 
 logger: logging.Logger = logging.getLogger(__name__)
 
+import logging
+import os
+import subprocess
+import tempfile
+
+import PIL
+from fpdf import FPDF
+from opensfm import io
+from opensfm.dataset import DataSet
+from typing import Any, Dict
+
+logger: logging.Logger = logging.getLogger(__name__)
+
 
 class Report:
-    def __init__(self, data: DataSet, stats = None) -> None:
+    def __init__(self, data: DataSet, stats=None) -> None:
         self.output_path = os.path.join(data.data_path, "stats")
         self.dataset_name = os.path.basename(data.data_path)
         self.io_handler = data.io_handler
@@ -27,7 +40,7 @@ class Report:
         self.pdf.add_page()
 
         self.title_size = 20
-        self.h1 = 16
+        self.h1 = 13
         self.h2 = 13
         self.h3 = 10
         self.text = 10
@@ -48,7 +61,7 @@ class Report:
             bytestring = bytestring.encode("utf8")
 
         with self.io_handler.open(
-            os.path.join(self.output_path, filename), "wb"
+                os.path.join(self.output_path, filename), "wb"
         ) as fwb:
             fwb.write(bytestring)
 
@@ -106,7 +119,7 @@ class Report:
 
     def _read_gcp_stats_file(self, filename):
         file_path = os.path.join(self.output_path, "ground_control_points.json")
-        
+
         with self.io_handler.open_rt(file_path) as fin:
             return io.json_load(fin)
 
@@ -147,11 +160,44 @@ class Report:
                 self.margin, self.pdf.get_y() + desired_height + self.margin
             )
 
+    def _make_left_aligned_image(self, image_path: str, desired_height: float) -> None:
+        # Cria um diretório temporário para armazenar a imagem localmente
+        with tempfile.TemporaryDirectory() as tmp_local_dir:
+            local_image_path = os.path.join(tmp_local_dir, os.path.basename(image_path))
+            # Copia a imagem do local original para o diretório temporário
+            with self.io_handler.open(local_image_path, "wb") as fwb:
+                with self.io_handler.open(image_path, "rb") as f:
+                    fwb.write(f.read())
+            # Abre a imagem local e obtém suas dimensões
+            width, height = PIL.Image.open(local_image_path).size
+            # Calcula a largura redimensionada com base na altura desejada
+            resized_width = width * desired_height / height
+            # Certifica-se de que a largura redimensionada não excede a largura total disponível
+            if resized_width > self.total_size:
+                resized_width = self.total_size
+                desired_height = height * resized_width / width
+            # Insere a imagem no documento PDF alinhada à esquerda
+            self.pdf.image(
+                local_image_path,
+                self.margin,  # Utiliza a margem esquerda como posição x
+                self.pdf.get_y(),
+                h=desired_height
+            )
+            # Atualiza a posição do cursor após a imagem
+            self.pdf.set_xy(
+                self.margin, self.pdf.get_y() + desired_height + self.margin
+            )
+
     def make_title(self) -> None:
-        # title
+        # imagem geonex
+        self._make_left_aligned_image(
+            os.path.join(os.getcwd(), "SuperBuild", "install", "bin", "opensfm", "data", "logo", "GeonexMaps.png"), 20
+        )
         self.pdf.set_font("Helvetica", "B", self.title_size)
         self.pdf.set_text_color(*self.mapi_light_green)
-        self.pdf.cell(0, self.margin, "ODM Quality Report", align="C")
+        # título
+        self.pdf.cell(0, self.margin, " ", align="C", ln=True)
+        self.pdf.cell(0, self.margin, "Relatório de Qualidade", align="C")
         self.pdf.set_xy(self.margin, self.title_size)
 
         # version number
@@ -159,7 +205,7 @@ class Report:
         version = ""
         try:
             with open(version_file, 'r') as f:
-               version = f.read().strip()
+                version = f.read().strip()
         except Exception as e:
             logger.warning("Invalid version file" + version_file + ": " + str(e))
 
@@ -169,39 +215,44 @@ class Report:
         self.pdf.set_font("Helvetica", "", self.small_text)
         self.pdf.set_text_color(*self.mapi_dark_grey)
         self.pdf.cell(
-            0, self.margin, f"Processed with ODM version {version}", align="R"
+            0, self.margin, f"Processado pela GeonexMaps Versão: {version}", align="R"
         )
         self.pdf.set_xy(self.margin, self.pdf.get_y() + 2 * self.margin)
-
     def make_dataset_summary(self) -> None:
-        self._make_section("Dataset Summary")
+        self.pdf.set_font("Helvetica", "B", self.title_size)
+        self.pdf.cell(0, self.margin, " ", align="C", ln=True)
+        self.pdf.cell(0, self.margin, " ", align="C", ln=True)
+        self.pdf.cell(0, self.margin, " ", align="C", ln=True)
+        self._make_section("Resumo do Conjunto de Dados")
 
         rows = [
-            #["Dataset", self.dataset_name],
-            ["Date", self.stats["processing_statistics"]["date"]],
+            # ["Dataset", self.dataset_name],
+            ["Data", self.stats["processing_statistics"]["date"]],
             [
-                "Area Covered",
-                f"{self.stats['processing_statistics']['area']/1e6:.6f} km²",
+                "Área Coberta",
+                f"{self.stats['processing_statistics']['area'] / 1e6:.6f} km²",
             ],
             [
-                "Processing Time",
-                #f"{self.stats['processing_statistics']['steps_times']['Total Time']:.2f} seconds",
+                "Tempo de Processamento",
+                # f"{self.stats['processing_statistics']['steps_times']['Total Time']:.2f} seconds",
                 self.stats['odm_processing_statistics']['total_time_human'],
             ],
-            ["Capture Start", self.stats["processing_statistics"]["start_date"]],
-            ["Capture End", self.stats["processing_statistics"]["end_date"]],
+            ["Início da Captura", self.stats["processing_statistics"]["start_date"]],
+            ["Fim da Captura", self.stats["processing_statistics"]["end_date"]],
         ]
         self._make_table(None, rows, True)
         self.pdf.set_xy(self.margin, self.pdf.get_y() + self.margin)
 
     def _has_meaningful_gcp(self) -> bool:
         return (
-            self.stats["reconstruction_statistics"]["has_gcp"]
-            and "average_error" in self.stats["gcp_errors"]
+                self.stats["reconstruction_statistics"]["has_gcp"]
+                and "average_error" in self.stats["gcp_errors"]
         )
 
     def make_processing_summary(self) -> None:
-        self._make_section("Processing Summary")
+        self.pdf.cell(0, self.margin, " ", align="C", ln=True)
+        self.pdf.cell(0, self.margin, " ", align="C", ln=True)
+        self._make_section("Resumo do Processamento")
 
         rec_shots, init_shots = (
             self.stats["reconstruction_statistics"]["reconstructed_shots_count"],
@@ -217,7 +268,7 @@ class Report:
             geo_string.append("GPS")
         if self._has_meaningful_gcp():
             geo_string.append("GCP")
-        
+
         if "align" in self.stats:
             geo_string = ["Alignment"]
 
@@ -227,56 +278,60 @@ class Report:
         ratio_shots = rec_shots / init_shots * 100 if init_shots > 0 else -1
         rows = [
             [
-                "Reconstructed Images",
-                f"{rec_shots} over {init_shots} shots ({ratio_shots:.1f}%)",
+                "Imagens Reconstruídas",
+                f"{rec_shots} de {init_shots} imagens ({ratio_shots:.1f}%)",
             ],
             [
-                "Reconstructed Points (Sparse)",
-                f"{rec_points} over {init_points} points ({rec_points/init_points*100:.1f}%)",
+                "Pontos Reconstruídos (Esparsos)",
+                f"{rec_points} de {init_points} pontos ({rec_points / init_points * 100:.1f}%)",
             ],
             # [
             #     "Reconstructed Components",
             #     f"{self.stats['reconstruction_statistics']['components']} component",
             # ],
             [
-                "Detected Features",
-                f"{self.stats['features_statistics']['detected_features']['median']:,} features",
+                "Recursos Detectados",
+                f"{self.stats['features_statistics']['detected_features']['median']:,} recursos",
             ],
             [
-                "Reconstructed Features",
-                f"{self.stats['features_statistics']['reconstructed_features']['median']:,} features",
+                "Recursos Reconstruídos",
+                f"{self.stats['features_statistics']['reconstructed_features']['median']:,} recursos",
             ],
-            ["Geographic Reference", " and ".join(geo_string)],
+            ["Referência Geográfica", " and ".join(geo_string)],
         ]
 
         # Dense (if available)
         if self.stats.get('point_cloud_statistics'):
             if self.stats['point_cloud_statistics'].get('dense'):
                 rows.insert(2, [
-                    "Reconstructed Points (Dense)",
-                    f"{self.stats['point_cloud_statistics']['stats']['statistic'][0]['count']:,} points"
+                    "Pontos Reconstruídos (Densos)",
+                    f"{self.stats['point_cloud_statistics']['stats']['statistic'][0]['count']:,} pontos"
                 ])
 
         # GSD (if available)
         if self.stats['odm_processing_statistics'].get('average_gsd'):
             rows.insert(3, [
-                "Average Ground Sampling Distance (GSD)",
+                "Distância Média de Amostragem do Solo (GSD)",
                 f"{self.stats['odm_processing_statistics']['average_gsd']:.1f} cm"
             ])
-        
-        row_gps_gcp = [" / ".join(geo_string) + " errors"]
+
+        # row_gps_gcp = [" / ".join(geo_string) + " errors"]
+        # geo_errors = []
+
+        row_gps_gcp = [" / ".join(geo_string) + " (erros)"]
         geo_errors = []
-        
+
         if not "align" in self.stats:
             if self.stats["reconstruction_statistics"]["has_gps"]:
                 geo_errors.append(f"{self.stats['gps_errors']['average_error']:.2f}")
             if self._has_meaningful_gcp():
                 geo_errors.append(f"{self.stats['gcp_errors']['average_error']:.2f}")
         else:
-            geo_errors.append(f"{(self.stats['align']['coarse']['rmse_3d'] + self.stats['align']['fine']['rmse_3d']):.2f}")
-        
+            geo_errors.append(
+                f"{(self.stats['align']['coarse']['rmse_3d'] + self.stats['align']['fine']['rmse_3d']):.2f}")
+
         if len(geo_errors) > 0:
-            row_gps_gcp.append(" / ".join(geo_errors) + " meters")
+            row_gps_gcp.append(" / ".join(geo_errors) + " Metros")
             rows.append(row_gps_gcp)
 
         self._make_table(None, rows, True)
@@ -286,6 +341,7 @@ class Report:
         topview_grids = [
             f for f in self.io_handler.ls(self.output_path) if f.startswith("topview")
         ]
+        self.add_page_break()
         self._make_centered_image(
             os.path.join(self.output_path, topview_grids[0]), topview_height
         )
@@ -335,8 +391,8 @@ class Report:
             for comp in ["x", "y", "z"]:
                 row = [comp.upper() + " Error (meters)"]
                 row.append(f"{self.stats[error_type + '_errors']['mean'][comp]:.3f}")
-                row.append(f"{self.stats[error_type +'_errors']['std'][comp]:.3f}")
-                row.append(f"{self.stats[error_type +'_errors']['error'][comp]:.3f}")
+                row.append(f"{self.stats[error_type + '_errors']['std'][comp]:.3f}")
+                row.append(f"{self.stats[error_type + '_errors']['error'][comp]:.3f}")
                 rows.append(row)
 
             rows.append(
@@ -344,7 +400,7 @@ class Report:
                     "Total",
                     "",
                     "",
-                    f"{self.stats[error_type +'_errors']['average_error']:.3f}",
+                    f"{self.stats[error_type + '_errors']['average_error']:.3f}",
                 ]
             )
             self._make_table(columns_names, rows)
@@ -365,12 +421,12 @@ class Report:
                     "Horizontal Accuracy CE90 (meters)",
                     f"{a_ce90:.3f}",
                     f"{r_ce90:.3f}" if r_ce90 > 0 else "-",
-                ],[
+                ], [
                     "Vertical Accuracy LE90 (meters)",
                     f"{a_le90:.3f}",
                     f"{r_le90:.3f}" if r_le90 > 0 else "-",
                 ]]
-            
+
             if rows:
                 if table_count > 2:
                     self.add_page_break()
@@ -409,7 +465,8 @@ class Report:
             row = [comp.upper() + " Error (meters)"]
             row.append(f"{self.stats['align']['coarse']['rmse_' + comp]:.3f}")
             row.append(f"{self.stats['align']['fine']['rmse_' + comp]:.3f}")
-            row.append(f"{(self.stats['align']['coarse']['rmse_' + comp] + self.stats['align']['fine']['rmse_' + comp]):.3f}")
+            row.append(
+                f"{(self.stats['align']['coarse']['rmse_' + comp] + self.stats['align']['fine']['rmse_' + comp]):.3f}")
             rows.append(row)
 
         self._make_table(columns_names, rows)
@@ -589,7 +646,7 @@ class Report:
         self.pdf.add_page("P")
 
     def make_survey_data(self):
-        self._make_section("Survey Data")
+        self._make_section("Dados de Levantamento")
 
         self._make_centered_image(
             os.path.join(self.output_path, "overlap.png"), 90
@@ -600,11 +657,10 @@ class Report:
 
         self.pdf.set_xy(self.margin, self.pdf.get_y() + self.margin / 2)
 
-
     def _add_image_label(self, text):
         self.pdf.set_font_size(self.small_text)
-        self.pdf.text(self.pdf.get_x() + self.total_size / 2 - self.pdf.get_string_width(text) / 2, self.pdf.get_y() - 5, text)
-
+        self.pdf.text(self.pdf.get_x() + self.total_size / 2 - self.pdf.get_string_width(text) / 2,
+                      self.pdf.get_y() - 5, text)
 
     def make_preview(self):
         ortho = os.path.join(self.output_path, "ortho.png")
@@ -613,15 +669,15 @@ class Report:
         count = 0
 
         if os.path.isfile(ortho) or os.path.isfile(dsm):
-            self._make_section("Previews")
-            
+            self._make_section("Pré-visualizações")
+
             if os.path.isfile(ortho):
                 self._make_centered_image(
                     os.path.join(self.output_path, ortho), 110
                 )
-                self._add_image_label("Orthophoto")
+                self._add_image_label("Ortofoto")
                 count += 1
-
+                self.add_page_break()
             if os.path.isfile(dsm) and self.stats.get('dsm_statistics'):
                 self._make_centered_image(
                     os.path.join(self.output_path, dsm), 110
@@ -635,7 +691,8 @@ class Report:
                 min_text = "{:,.2f}m".format(self.stats['dsm_statistics']['min'])
                 max_text = "{:,.2f}m".format(self.stats['dsm_statistics']['max'])
                 self.pdf.text(self.pdf.get_x() + 40, self.pdf.get_y() - 5, min_text)
-                self.pdf.text(self.pdf.get_x() + 40 + 110.5 - self.pdf.get_string_width(max_text), self.pdf.get_y() - 5, max_text)
+                self.pdf.text(self.pdf.get_x() + 40 + 110.5 - self.pdf.get_string_width(max_text), self.pdf.get_y() - 5,
+                              max_text)
                 count += 1
 
             if os.path.isfile(dtm) and self.stats.get('dtm_statistics'):
@@ -654,24 +711,25 @@ class Report:
                 min_text = "{:,.2f}m".format(self.stats['dtm_statistics']['min'])
                 max_text = "{:,.2f}m".format(self.stats['dtm_statistics']['max'])
                 self.pdf.text(self.pdf.get_x() + 40, self.pdf.get_y() - 5, min_text)
-                self.pdf.text(self.pdf.get_x() + 40 + 110.5 - self.pdf.get_string_width(max_text), self.pdf.get_y() - 5, max_text)
+                self.pdf.text(self.pdf.get_x() + 40 + 110.5 - self.pdf.get_string_width(max_text), self.pdf.get_y() - 5,
+                              max_text)
 
             self.pdf.set_xy(self.margin, self.pdf.get_y() + self.margin)
 
             return True
 
     def generate_report(self) -> None:
+
         self.make_title()
         self.make_dataset_summary()
         self.make_processing_summary()
-        self.add_page_break()
 
         if self.make_preview():
             self.add_page_break()
 
         if os.path.isfile(os.path.join(self.output_path, "overlap.png")):
             self.make_survey_data()
-        
+
         if "align" not in self.stats:
             self.make_gps_details()
 
@@ -688,4 +746,4 @@ class Report:
 
         self.make_tracks_details()
         self.make_camera_models_details()
-        #self.make_rig_cameras_details()
+        # self.make_rig_cameras_details()
