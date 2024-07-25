@@ -26,6 +26,8 @@ data/berlin/*
 !data/berlin
 !data/berlin/config.yaml
 !data/berlin/images
+!data/logo/*
+!data/logo/GeonexMaps.png
 
 # Ignore virtualenv files
 env/*
