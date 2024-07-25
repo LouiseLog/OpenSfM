@@ -713,7 +713,6 @@ class Report:
         topview_grids = [
             f for f in self.io_handler.ls(self.output_path) if f.startswith("topview")
         ]
-        self.add_page_break()
 
         self._make_section("Gráfico de sobreposição")
         self._make_centered_image(
@@ -727,8 +726,8 @@ class Report:
         self.make_title()
         self.make_dataset_summary()
         self.make_processing_summary()
+        self.add_page_break()
         self.make_overlap_position()
-
         if self.make_preview():
             self.add_page_break()
 
