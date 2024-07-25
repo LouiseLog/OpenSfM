@@ -730,6 +730,7 @@ class Report:
         self.add_page_break()
         self.make_overlap_position()
         self.make_preview()
+        
         if os.path.isfile(os.path.join(self.output_path, "overlap.png")):
             self.make_survey_data()
 
