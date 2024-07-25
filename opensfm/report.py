@@ -218,6 +218,7 @@ class Report:
             0, self.margin, f"Processado pela GeonexMaps Versão: {version}", align="R"
         )
         self.pdf.set_xy(self.margin, self.pdf.get_y() + 2 * self.margin)
+
     def make_dataset_summary(self) -> None:
         self.pdf.set_font("Helvetica", "B", self.title_size)
         self.pdf.cell(0, self.margin, " ", align="C", ln=True)
@@ -728,9 +729,7 @@ class Report:
         self.make_processing_summary()
         self.add_page_break()
         self.make_overlap_position()
-        if self.make_preview():
-            self.add_page_break()
-
+        self.make_preview()
         if os.path.isfile(os.path.join(self.output_path, "overlap.png")):
             self.make_survey_data()
 
