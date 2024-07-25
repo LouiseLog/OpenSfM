@@ -481,9 +481,14 @@ class Report:
             logger.warning("Please implement multi-model display")
 
         columns_names = ["", "Mín.", "Máx..", "Média", "Mediana"]
-        rows = []
+        row, rows = [], []
         for comp in ["detected_features", "reconstructed_features"]:
-            row = [comp.replace("_", " ").replace("features", "").capitalize()]
+            #row = [comp.replace("_", " ").replace("features", "").capitalize()]
+            # substitue o nome do componente por Detectados e Reconstruídos
+            if comp.replace("_", " ").replace("features", "").capitalize() == "Detected":
+                row.append("Detectados")
+            elif comp.replace("_", " ").replace("features", "").capitalize() == "Reconstructed":
+                row.append("Reconstruídos")
             for t in columns_names[1:]:
                 row.append(
                     f"{self.stats['features_statistics'][comp][t.replace('.', '').lower()]:.0f}"
@@ -494,11 +499,11 @@ class Report:
         self.pdf.set_xy(self.margin, self.pdf.get_y() + self.margin)
 
     def make_reconstruction_details(self) -> None:
-        self._make_section("Reconstruction Details")
+        self._make_section("Detalhes da Reconstrução")
 
         rows = [
             [
-                "Average Reprojection Error (normalized / pixels / angular)",
+                "Erro Médio de Reprojeção (normalizado / pixels / angular)",
                 (
                     f"{self.stats['reconstruction_statistics']['reprojection_error_normalized']:.2f} / "
                     f"{self.stats['reconstruction_statistics']['reprojection_error_pixels']:.2f} / "
