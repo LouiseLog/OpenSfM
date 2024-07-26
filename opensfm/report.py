@@ -254,7 +254,6 @@ class Report:
 
     def make_processing_summary(self) -> None:
         self.pdf.cell(0, self.margin, " ", align="C", ln=True)
-        self.pdf.cell(0, self.margin, " ", align="C", ln=True)
         self._make_section("Resumo do Processamento")
 
         rec_shots, init_shots = (
@@ -497,9 +496,10 @@ class Report:
             rows.append(row)
             # rows <class 'list'>: [['Detected ', '10000', '10000', '10000', '10000'], ['Reconstructed ', '3324', '5547', '4665', '4976']]
             # columns_names <class 'list'>: ['', 'Min.', 'Max.', 'Mean', 'Median']
-            rows[0][0]='Detectados'
-            rows[1][0]='Reconstruídos'
-            columns_names = ["", "Mínimo", "Máximo", "Média", "Mediana"]
+        rows[0][0] = "Recursos Detectados"
+        rows[1][0] = "Recursos Reconstruídos"
+        columns_names = ["", "Mínimo", "Máximo", "Média", "Mediana"]
+        self._make_table(columns_names, rows)
         self.pdf.set_xy(self.margin, self.pdf.get_y() + self.margin)
 
     def make_reconstruction_details(self) -> None:
