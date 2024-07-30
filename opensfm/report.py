@@ -193,6 +193,8 @@ class Report:
         self._make_left_aligned_image(
             os.path.join(os.getcwd(), "SuperBuild", "install", "bin", "opensfm", "data", "logo", "GeonexMaps.png"), 20
         )
+        print(os.listdir(os.path.join(os.getcwd(), "SuperBuild", "install", "bin", "opensfm", "data")))
+
         self.pdf.set_font("Helvetica", "B", self.title_size)
         self.pdf.set_text_color(*self.mapi_light_green)
         # título
