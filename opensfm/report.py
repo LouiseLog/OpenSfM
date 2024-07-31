@@ -188,20 +188,13 @@ class Report:
                 self.margin, self.pdf.get_y() + desired_height + self.margin
             )
 
-    def procurar_arquivo(diretorio, nome_arquivo="GeonexMaps.png"):
-
-        for root, dirs, files in os.walk(diretorio):
-            if nome_arquivo in files:
-                return os.path.join(root, nome_arquivo)
-        return f"Arquivo {nome_arquivo} não encontrado no diretório {diretorio}."
-
     def make_title(self) -> None:
         # imagem geonex
-        print(os.listdir('/code/SuperBuild/install/bin/opensfm/data/'))
-        print(self.procurar_arquivo('/code/SuperBuild/install/bin/opensfm/data/'))
-        self._make_left_aligned_image(
-            os.path.join('/code/SuperBuild/install/bin/opensfm/data/logo', "GeonexMaps.png"), 20
-        )
+        #print(os.listdir('/code/SuperBuild/install/bin/opensfm/data/'))
+
+        self.logo_dir_path = '/code/SuperBuild/install/bin/opensfm/data/logo'
+        self.geonex_path = os.path.join(self.logo_dir_path, "GeonexMaps.png")
+        self._make_left_aligned_image(self.geonex_path, 20)
 
         #self._make_left_aligned_image('/code/SuperBuild/install/bin/opensfm/data/logo/GeonexMaps.png', 20)
 
