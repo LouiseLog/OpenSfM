@@ -199,11 +199,11 @@ class Report:
         # imagem geonex
         print(os.listdir('/code/SuperBuild/install/bin/opensfm/data/'))
         print(self.procurar_arquivo('/code/SuperBuild/install/bin/opensfm/data/'))
-        #self._make_left_aligned_image(
-        #    os.path.join('code', "SuperBuild", "install", "bin", "opensfm", "data", "logo", "GeonexMaps.png"), 20
-        #)
+        self._make_left_aligned_image(
+            os.path.join('/code/SuperBuild/install/bin/opensfm/data/logo', "GeonexMaps.png"), 20
+        )
 
-        self._make_left_aligned_image('/code/SuperBuild/install/bin/opensfm/data/logo/GeonexMaps.png', 20)
+        #self._make_left_aligned_image('/code/SuperBuild/install/bin/opensfm/data/logo/GeonexMaps.png', 20)
 
 
         self.pdf.set_font("Helvetica", "B", self.title_size)
