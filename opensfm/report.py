@@ -190,14 +190,10 @@ class Report:
 
     def make_title(self) -> None:
         # imagem geonex
-        #print(os.listdir('/code/SuperBuild/install/bin/opensfm/data/'))
 
         self.logo_dir_path = '/code/SuperBuild/install/bin/opensfm/data/logo'
         self.geonex_path = os.path.join(self.logo_dir_path, "GeonexMaps.png")
         self._make_left_aligned_image(self.geonex_path, 20)
-
-        #self._make_left_aligned_image('/code/SuperBuild/install/bin/opensfm/data/logo/GeonexMaps.png', 20)
-
 
         self.pdf.set_font("Helvetica", "B", self.title_size)
         self.pdf.set_text_color(*self.mapi_light_green)
@@ -672,7 +668,7 @@ class Report:
         ortho = os.path.join(self.output_path, "ortho.png")
         dsm = os.path.join(self.output_path, "dsm.png")
         dtm = os.path.join(self.output_path, "dtm.png")
-        count = 0
+        count = 1
 
         if os.path.isfile(ortho) or os.path.isfile(dsm):
             self._make_section("Pré-visualização")
@@ -683,12 +679,15 @@ class Report:
                 )
                 self._add_image_label("Ortofoto")
                 count += 1
-                self.add_page_break()
+
+                if count >= 2:
+                    self.add_page_break()
+
             if os.path.isfile(dsm) and self.stats.get('dsm_statistics'):
                 self._make_centered_image(
                     os.path.join(self.output_path, dsm), 110
                 )
-                self._add_image_label("Digital Surface Model")
+                self._add_image_label("Modelo Digital de Superfície")
 
                 self._make_centered_image(
                     os.path.join(self.output_path, "dsm_gradient.png"), 4
@@ -702,13 +701,11 @@ class Report:
                 count += 1
 
             if os.path.isfile(dtm) and self.stats.get('dtm_statistics'):
-                if count >= 2:
-                    self.add_page_break()
 
                 self._make_centered_image(
                     os.path.join(self.output_path, dtm), 110
                 )
-                self._add_image_label("Digital Terrain Model")
+                self._add_image_label("Modelo Digital de Terreno")
 
                 self._make_centered_image(
                     os.path.join(self.output_path, "dsm_gradient.png"), 4
@@ -719,7 +716,9 @@ class Report:
                 self.pdf.text(self.pdf.get_x() + 40, self.pdf.get_y() - 5, min_text)
                 self.pdf.text(self.pdf.get_x() + 40 + 110.5 - self.pdf.get_string_width(max_text), self.pdf.get_y() - 5,
                               max_text)
-
+                count += 1
+                if count >= 4:
+                    self.add_page_break()
             self.pdf.set_xy(self.margin, self.pdf.get_y() + self.margin)
 
             return True
