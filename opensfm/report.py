@@ -189,13 +189,7 @@ class Report:
             )
 
     def procurar_arquivo(diretorio, nome_arquivo="GeonexMaps.png"):
-        """
-        Procura por um arquivo específico em um diretório e seus subdiretórios.
 
-        :param diretorio: O diretório onde a busca será realizada.
-        :param nome_arquivo: O nome do arquivo a ser procurado (padrão é "GeonexMaps.png").
-        :return: O caminho completo do arquivo encontrado ou uma mensagem indicando que o arquivo não foi encontrado.
-        """
         for root, dirs, files in os.walk(diretorio):
             if nome_arquivo in files:
                 return os.path.join(root, nome_arquivo)
@@ -204,11 +198,11 @@ class Report:
     def make_title(self) -> None:
         # imagem geonex
         self._make_left_aligned_image(
-            os.path.join(os.getcwd(), "SuperBuild", "install", "bin", "opensfm", "data", "logo", "GeonexMaps.png"), 20
+            os.path.join('code', "SuperBuild", "install", "bin", "opensfm", "data", "logo", "GeonexMaps.png"), 20
         )
-        
-        print(os.listdir(os.path.join(os.getcwd(), "SuperBuild", "install", "bin", "opensfm", "data")))
-        print(self.procurar_arquivo(os.path.join(os.getcwd(), "SuperBuild", "install", "bin", "opensfm", "data")))
+
+        #print(os.listdir(os.path.join(os.getcwd(), "SuperBuild", "install", "bin", "opensfm", "data")))
+        #print(self.procurar_arquivo(os.path.join(os.getcwd(), "SuperBuild", "install", "bin", "opensfm", "data")))
 
         self.pdf.set_font("Helvetica", "B", self.title_size)
         self.pdf.set_text_color(*self.mapi_light_green)
