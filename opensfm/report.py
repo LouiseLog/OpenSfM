@@ -197,12 +197,13 @@ class Report:
 
     def make_title(self) -> None:
         # imagem geonex
+        print(os.listdir(os.path.join('code', "SuperBuild", "install", "bin", "opensfm", "data")))
+        print(self.procurar_arquivo(os.path.join('code', "SuperBuild", "install", "bin", "opensfm", "data")))
         self._make_left_aligned_image(
             os.path.join('code', "SuperBuild", "install", "bin", "opensfm", "data", "logo", "GeonexMaps.png"), 20
         )
 
-        #print(os.listdir(os.path.join(os.getcwd(), "SuperBuild", "install", "bin", "opensfm", "data")))
-        #print(self.procurar_arquivo(os.path.join(os.getcwd(), "SuperBuild", "install", "bin", "opensfm", "data")))
+
 
         self.pdf.set_font("Helvetica", "B", self.title_size)
         self.pdf.set_text_color(*self.mapi_light_green)
