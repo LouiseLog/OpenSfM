@@ -217,7 +217,7 @@ class Report:
         self.pdf.set_font("Helvetica", "", self.small_text)
         self.pdf.set_text_color(*self.mapi_dark_grey)
         self.pdf.cell(
-            0, self.margin, f"Processado pela GeonexMaps Versão: {version}", align="R"
+            0, self.margin, f"Processado pela GeoMapX Versão: {version}", align="R"
         )
         self.pdf.set_xy(self.margin, self.pdf.get_y() + 2 * self.margin)
 
