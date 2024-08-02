@@ -629,7 +629,7 @@ class Report:
 
         histogram = self.stats["reconstruction_statistics"]["histogram_track_length"]
         start_length, end_length = 2, 10
-        row_length = ["Comprimento"]
+        row_length = ["Extensão"]
         for length, _ in sorted(histogram.items(), key=lambda x: int(x[0])):
             if int(length) < start_length or int(length) > end_length:
                 continue
