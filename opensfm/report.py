@@ -203,6 +203,7 @@ class Report:
         self.pdf.set_xy(self.margin, self.title_size)
 
         # version number
+        """
         version_file = os.path.join(os.path.dirname(__file__), "..", "..", "..", "..", "..", "VERSION")
         version = ""
         try:
@@ -213,11 +214,16 @@ class Report:
 
         # indicate we don't know the version
         version = "unknown" if version == "" else version
-
+        """
+        version = "1.0.1"
+        # versao removida 
         self.pdf.set_font("Helvetica", "", self.small_text)
         self.pdf.set_text_color(*self.mapi_dark_grey)
+        #self.pdf.cell(
+        #    0, self.margin, f"Processado pela GeoMapX Versão: {version}", align="R"
+        #)
         self.pdf.cell(
-            0, self.margin, f"Processado pela GeoMapX Versão: {version}", align="R"
+            0, self.margin, f"Processado pela Geonex", align="R"
         )
         self.pdf.set_xy(self.margin, self.pdf.get_y() + 2 * self.margin)
 
