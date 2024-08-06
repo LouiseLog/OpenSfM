@@ -216,7 +216,7 @@ class Report:
         version = "unknown" if version == "" else version
         """
         version = "1.0.1"
-        # versao removida 
+        # versao removida
         self.pdf.set_font("Helvetica", "", self.small_text)
         self.pdf.set_text_color(*self.mapi_dark_grey)
         #self.pdf.cell(
